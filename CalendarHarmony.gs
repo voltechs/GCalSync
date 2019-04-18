@@ -3,6 +3,7 @@ var days_in_advance = 14; // how many days in advance to monitor and block off t
 var eventPrefix="BOOKED"; // update this to the text you'd like to appear in the new events created in primary calendar
 var weekdays_only = false;
 var color = CalendarApp.EventColor.PALE_RED;
+var sync_lock_seconds = 60;
 
 var start_time=new Date();
 var end_time=new Date();
@@ -66,10 +67,20 @@ function clearEvents() {
   }
 }
 
-function sync() {
+function sync_lock() {
   var lock = LockService.getScriptLock();
-  lock.waitLock(15000);
+  if (lock.tryLock(sync_lock_seconds*1000)) {
+    try {
+      sync();
+    } finally {
+      lock.releaseLock();
+    }
+  } else {
+    Logger.log('Could not obtain lock after 1 minute.');
+  }
+}
 
+function sync() {
   var secondaryEvents = getCalendarEvents(secondaryCalendar, start_time, end_time);
   var primaryEvents = getCalendarEvents(primaryCalendar, start_time, end_time); // all primary calendar events
 
@@ -120,6 +131,4 @@ function sync() {
     Logger.log("Deleting: " + pEvent.summary + " => " + pEvent.id + " @ " + pEvent.start.dateTime);
     Calendar.Events.remove(primaryCalendar.getId(), pEvent.id);
   }
-
-  lock.releaseLock();
 }
