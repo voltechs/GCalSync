@@ -1,16 +1,21 @@
 var calendarId="your.email@some.email.provider.com"; // CHANGE - id of the secondary calendar to pull events from
 var days_in_advance = 14; // how many days in advance to monitor and block off time
-var eventPrefix="BOOKED"; // update this to the text you'd like to appear in the new events created in primary calendar
+var days_prior = 7;
 var weekdays_only = false;
 var color = CalendarApp.EventColor.PALE_RED;
-var sync_lock_seconds = 60;
 
-var start_time=new Date();
-var end_time=new Date();
-end_time.setDate(start_time.getDate()+days_in_advance);
+/* Advanced Settings */
+var eventPrefix="BOOKED"; // update this to the text you'd like to appear in the new events created in primary calendar
+var default_very_private = true;
+var sync_lock_seconds = 60;
 
 
 /* Globals you really shouldn't touch... */
+var start_time=new Date();
+var end_time=new Date();
+start_time.setDate(start_time.getDate()-days_prior);
+end_time.setDate(end_time.getDate()+days_in_advance);
+
 var secondaryCalendar = getSecondaryCalendar();
 var primaryCalendar = getPrimaryCalendar();
 var userProperties = PropertiesService.getUserProperties();
