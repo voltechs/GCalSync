@@ -8,6 +8,7 @@ var color = CalendarApp.EventColor.PALE_RED;
 var eventPrefix="BOOKED"; // update this to the text you'd like to appear in the new events created in primary calendar
 var default_very_private = true;
 var sync_lock_seconds = 60;
+var logging = false;
 
 
 /* Globals you really shouldn't touch... */
@@ -19,6 +20,14 @@ end_time.setDate(end_time.getDate()+days_in_advance);
 var secondaryCalendar = getSecondaryCalendar();
 var primaryCalendar = getPrimaryCalendar();
 var userProperties = PropertiesService.getUserProperties();
+
+function log(msg)
+{
+  if (logging)
+  {
+    Logger.log(msg);
+  }
+}
 
 function is_on_weekday(event) {
   var day = event.getStartTime().getDay();
@@ -81,7 +90,7 @@ function sync_lock() {
       lock.releaseLock();
     }
   } else {
-    Logger.log('Could not obtain lock after 1 minute.');
+    log('Could not obtain lock after ' + sync_lock_seconds + ' seconds.');
   }
 }
 
@@ -93,8 +102,8 @@ function sync() {
   var primaryEventsUpdated = []; // to contain primary calendar events that were updated from secondary calendar
   var primaryEventsCreated = []; // to contain primary calendar events that were created from secondary calendar
 
-  Logger.log('Number of primaryEvents: ' + primaryEvents.length);
-  Logger.log('Number of secondaryEvents: ' + secondaryEvents.length);
+  log('Number of primaryEvents: ' + primaryEvents.length);
+  log('Number of secondaryEvents: ' + secondaryEvents.length);
 
   // create filtered list of existing primary calendar events that were previously created from the secondary calendar
   for each (var pEvent in primaryEvents)
@@ -114,11 +123,11 @@ function sync() {
     if ((pEvent = primaryEventsFiltered[sId]) != null)
     {
       delete primaryEventsFiltered[sId];
-      Logger.log("Updating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
+      log("Updating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
       updateEvent(pEvent, sEvent);
     } else {
       if (!weekdays_only || is_on_weekday(sEvent)) {
-        Logger.log("Creating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
+        log("Creating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
         pEvent = createEvent(sEvent, primaryCalendar);
       }
     }
@@ -133,7 +142,7 @@ function sync() {
   // if a primary event previously created no longer exists in the secondary calendar, delete it
   for each (var pEvent in primaryEventsFiltered)
   {
-    Logger.log("Deleting: " + pEvent.summary + " => " + pEvent.id + " @ " + pEvent.start.dateTime);
+    log("Deleting: " + pEvent.summary + " => " + pEvent.id + " @ " + pEvent.start.dateTime);
     Calendar.Events.remove(primaryCalendar.getId(), pEvent.id);
   }
 }
