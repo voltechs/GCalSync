@@ -119,6 +119,14 @@ function sync() {
     var pEvent = null;
     var sId = sEvent.id;
     var eventData = copyEvent(sEvent);
+
+    // Skip adding non-blocking (free, versus busy) all-day events
+    if (sEvent.end.date != null && sEvent.transparency == 'transparent')
+    {
+      log("Nonblocking All Day!: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.end.date);
+      continue;
+    }
+
     // if the secondary event has already been blocked in the primary calendar, update it
     if ((pEvent = primaryEventsFiltered[sId]) != null)
     {
@@ -131,12 +139,6 @@ function sync() {
         pEvent = createEvent(sEvent, primaryCalendar);
       }
     }
-
-    // TODO: Handle All-day events
-    // if (evi.isAllDayEvent())
-    // {
-    //   return; // Do nothing if the event is an all-day or multi-day event. This script only syncs hour-based events
-    // }
   }
 
   // if a primary event previously created no longer exists in the secondary calendar, delete it
