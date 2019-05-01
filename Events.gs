@@ -52,6 +52,7 @@ function createEvent(sEvent, calendar) {
 
 function updateEvent(pEvent, sEvent) {
   var updates = copyEvent(sEvent);
-  Calendar.Events.patch(updates, primaryCalendar.getId(), pEvent.id);
-  //Calendar.Events.patch(updates, primaryCalendar.getId(), pEvent.id);
+  retry(3, function() {
+    Calendar.Events.patch(updates, primaryCalendar.getId(), pEvent.id);
+  });
 }

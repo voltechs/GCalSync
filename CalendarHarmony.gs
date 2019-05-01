@@ -29,6 +29,16 @@ function log(msg)
   }
 }
 
+function retry(max, func) {
+  for (var n=0; n<=max; n++) {
+    try {
+      return func();
+    } catch(e) {
+      Utilities.sleep((Math.pow(2,n)*1000) + (Math.round(Math.random() * 1000)));
+    }
+  }
+}
+
 function is_on_weekday(event) {
   var day = event.getStartTime().getDay();
   return (day > 0 && day < 6);
