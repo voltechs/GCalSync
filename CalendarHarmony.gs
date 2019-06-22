@@ -9,6 +9,8 @@ var working_hours = {
   begin: 6, // 7
   end: 19 // 20
 }
+// Only show confirmed events
+var only_confirmed = true;
 
 /* Advanced Settings */
 var eventPrefix="Blocked"; // update this to the text you'd like to appear in the new events created in primary calendar
@@ -128,8 +130,22 @@ function is_in_working_hours(event) {
   }
 }
 
+function check_confirmed(event) {
+  if (only_confirmed && event.attendees) {
+    log(event.attendees.length);
+    for each (var attendee in event.attendees) {
+      if (attendee.email == calendarId) {
+        return attendee.responseStatus == 'accepted' || attendee.responseStatus == 'tentative';
+      }
+    }
+    return false;
+  } else {
+    return true;
+  }
+}
+
 function should_create_or_update(event) {
-  if (weekdays_only && is_on_weekday(event) && is_in_working_hours(event)) {
+  if (weekdays_only && is_on_weekday(event) && is_in_working_hours(event) && check_confirmed(event)) {
     return true;
   } else {
     return false;
