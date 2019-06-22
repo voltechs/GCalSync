@@ -3,6 +3,12 @@ var days_in_advance = 14; // how many days in advance to monitor and block off t
 var days_prior = 7;
 var weekdays_only = false;
 var color = CalendarApp.EventColor.PALE_RED;
+// Set to false, or use 24-hour hours
+// Currently need to adjust for daylight savings
+var working_hours = {
+  begin: 6, // 7
+  end: 19 // 20
+}
 
 /* Advanced Settings */
 var eventPrefix="Blocked"; // update this to the text you'd like to appear in the new events created in primary calendar
@@ -111,8 +117,19 @@ function clearEvents() {
   }
 }
 
+function is_in_working_hours(event) {
+  // TODO: Replace routine after fetching working hours from calendar
+  // https://stackoverflow.com/questions/51875481/api-to-get-the-working-hours-data-from-google-calendar-settings
+  if (working_hours) {
+    start = new Date(event.start.dateTime).getHours();
+    return (start >= working_hours.begin && start <= working_hours.end);
+  } else {
+    return true;
+  }
+}
+
 function should_create_or_update(event) {
-  if (weekdays_only && is_on_weekday(event)) {
+  if (weekdays_only && is_on_weekday(event) && is_in_working_hours(event)) {
     return true;
   } else {
     return false;
