@@ -41,7 +41,7 @@ function copyEvent(event) {
     visibility: 'private'
   };
   data.extendedProperties.shared[calendarId] = event.id
-  Logger.log(JSON.stringify(data));
+  debug(JSON.stringify(data));
   return data;
 }
 

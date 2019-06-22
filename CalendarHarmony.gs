@@ -140,8 +140,8 @@ function sync() {
   var primaryEventsUpdated = []; // to contain primary calendar events that were updated from secondary calendar
   var primaryEventsCreated = []; // to contain primary calendar events that were created from secondary calendar
 
-  log('Number of primaryEvents: ' + primaryEvents.length);
-  log('Number of secondaryEvents: ' + secondaryEvents.length);
+  debug('Number of primaryEvents: ' + primaryEvents.length);
+  debug('Number of secondaryEvents: ' + secondaryEvents.length);
 
   // create filtered list of existing primary calendar events that were previously created from the secondary calendar
   for each (var pEvent in primaryEvents)
@@ -161,7 +161,7 @@ function sync() {
     // Skip adding non-blocking (free, versus busy) all-day events
     if (sEvent.end.date != null && sEvent.transparency == 'transparent')
     {
-      log("Nonblocking All Day!: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.end.date);
+      debug("Nonblocking All Day!: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.end.date);
       continue;
     }
 
@@ -169,20 +169,24 @@ function sync() {
     if ((pEvent = primaryEventsFiltered[sId]) != null)
     {
       delete primaryEventsFiltered[sId];
-      log("Updating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
+      debug("Updating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
       updateEvent(pEvent, sEvent);
     } else {
       if (!weekdays_only || is_on_weekday(sEvent)) {
-        log("Creating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
+        debug("Creating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
         pEvent = createEvent(sEvent, primaryCalendar);
       }
     }
   }
 
+  log("Processed Events: " + secondaryEvents.length);
+
   // if a primary event previously created no longer exists in the secondary calendar, delete it
   for each (var pEvent in primaryEventsFiltered)
   {
-    log("Deleting: " + pEvent.summary + " => " + pEvent.id + " @ " + pEvent.start.dateTime);
+    debug("Deleting: " + pEvent.summary + " => " + pEvent.id + " @ " + pEvent.start.dateTime);
     Calendar.Events.remove(primaryCalendar.getId(), pEvent.id);
   }
+
+  log("Deleted Events: " + primaryEventsFiltered.length);
 }
