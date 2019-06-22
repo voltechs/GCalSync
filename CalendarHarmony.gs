@@ -111,17 +111,25 @@ function clearEvents() {
   }
 }
 
-function sync_lock() {
-  var lock = LockService.getScriptLock();
-  if (lock.tryLock(sync_lock_seconds*1000)) {
-    try {
-      sync();
-    } finally {
-      lock.releaseLock();
+function lock(timeout, func) {
+  try {
+    var lock = LockService.getScriptLock();
+    if (lock.tryLock(timeout*1000)) {
+      try {
+        func();
+      } finally {
+        lock.releaseLock();
+      }
+    } else {
+      warn('Could not obtain lock after ' + timeout + ' seconds.');
     }
-  } else {
-    log('Could not obtain lock after ' + sync_lock_seconds + ' seconds.');
+  } catch (e) {
+    warn('Could not obtain lock service.');
   }
+}
+
+function sync_lock() {
+  lock(sync_lock_seconds, sync);
 }
 
 function sync() {
