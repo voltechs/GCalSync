@@ -111,6 +111,14 @@ function clearEvents() {
   }
 }
 
+function should_create_or_update(event) {
+  if (weekdays_only && is_on_weekday(event)) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 function lock(timeout, func) {
   try {
     var lock = LockService.getScriptLock();
@@ -165,14 +173,14 @@ function sync() {
       continue;
     }
 
-    // if the secondary event has already been blocked in the primary calendar, update it
-    if ((pEvent = primaryEventsFiltered[sId]) != null)
-    {
-      delete primaryEventsFiltered[sId];
-      debug("Updating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
-      updateEvent(pEvent, sEvent);
-    } else {
-      if (!weekdays_only || is_on_weekday(sEvent)) {
+    if (should_create_or_update(sEvent)) {
+      // if the secondary event has already been blocked in the primary calendar, update it
+      if ((pEvent = primaryEventsFiltered[sId]) != null)
+      {
+        delete primaryEventsFiltered[sId];
+        debug("Updating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
+        updateEvent(pEvent, sEvent);
+      } else {
         debug("Creating: " + sEvent.summary + " => " + sEvent.id + " @ " + sEvent.start.dateTime);
         pEvent = createEvent(sEvent, primaryCalendar);
       }
