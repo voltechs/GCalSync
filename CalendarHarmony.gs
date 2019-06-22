@@ -5,8 +5,8 @@ var weekdays_only = false;
 var color = CalendarApp.EventColor.PALE_RED;
 
 /* Advanced Settings */
-var eventPrefix="BOOKED"; // update this to the text you'd like to appear in the new events created in primary calendar
-var default_very_private = true;
+var eventPrefix="Blocked"; // update this to the text you'd like to appear in the new events created in primary calendar
+var default_very_private = false;
 var sync_lock_seconds = 60;
 var logging = true;
 var warning = true;

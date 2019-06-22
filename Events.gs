@@ -1,15 +1,14 @@
-
 function copyEventSummary(event) {
-  if (event.visibility == "private" || default_very_private) {
-   return eventPrefix+" (Private)";
+  if (event.visibility == 'private' || event.visibility == undefined && default_very_private) {
+   return eventPrefix;//+" (Private)";
   } else {
     return eventPrefix+" ("+event.summary+")";
   }
 }
 
 function copyEventDescription(event) {
-  if (event.visibility == "private" || default_very_private) {
-   return "Private";
+  if (event.visibility == "public" && default_very_private) {
+   return "";
   } else {
     return event.description;
   }
