@@ -8,7 +8,9 @@ var color = CalendarApp.EventColor.PALE_RED;
 var eventPrefix="BOOKED"; // update this to the text you'd like to appear in the new events created in primary calendar
 var default_very_private = true;
 var sync_lock_seconds = 60;
-var logging = false;
+var logging = true;
+var warning = true;
+var debuging = false;
 
 
 /* Globals you really shouldn't touch... */
@@ -24,6 +26,22 @@ var userProperties = PropertiesService.getUserProperties();
 function log(msg)
 {
   if (logging)
+  {
+    Logger.log(msg);
+  }
+}
+
+function debug(msg)
+{
+  if (debuging)
+  {
+    Logger.log(msg);
+  }
+}
+
+function warn(msg)
+{
+  if (warning)
   {
     Logger.log(msg);
   }
@@ -49,8 +67,8 @@ function getPrimaryCalendar() {
 }
 
 function getSecondaryCalendar() {
-  Logger.log(JSON.stringify(PropertiesService.getUserProperties()));
-  Logger.log(JSON.stringify(PropertiesService.getScriptProperties()));
+  debug(JSON.stringify(PropertiesService.getUserProperties()));
+  debug(JSON.stringify(PropertiesService.getScriptProperties()));
   return CalendarApp.getCalendarById(calendarID());
 }
 
