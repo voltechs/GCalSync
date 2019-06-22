@@ -52,7 +52,7 @@ function retry(max, func) {
     try {
       return func();
     } catch(e) {
-      Utilities.sleep((Math.pow(2,n)*1000) + (Math.round(Math.random() * 1000)));
+      Utilities.sleep((Math.pow(2,n)*2000) + (Math.round(Math.random() * 2000)));
     }
   }
 }
