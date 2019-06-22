@@ -58,7 +58,9 @@ function retry(max, func) {
 }
 
 function is_on_weekday(event) {
-  var day = event.getStartTime().getDay();
+  // According to google docs, event.start.dateTime
+  // should be a datetime object. Oh well.
+  day = new Date(event.start.dateTime).getDay();
   return (day > 0 && day < 6);
 }
 
